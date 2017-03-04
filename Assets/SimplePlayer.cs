@@ -53,7 +53,7 @@ public class SimplePlayer : MonoBehaviour {
                 });
             };
 
-            rgc.OnMatchEnd += packet => {
+			rgc.OnMatchEnd += packet => {
                 MainThread.Call(() =>
                 {
                     removeOthers();
@@ -61,13 +61,20 @@ public class SimplePlayer : MonoBehaviour {
                 });
             };
 
-            rgc.OnMatchExit += packet => {
+			rgc.OnMatchExit += () => {
                 MainThread.Call(() =>
                 {
                     removeOthers();
                     removePlayer();
                 });
             };
+
+			rgc.OnOtherMatchExit += otherId => {
+				MainThread.Call(() =>
+				{
+					removeSingleOther(otherId);
+				});
+			};
 
             rgc.OnMatchStart += packet =>
             {
@@ -134,11 +141,14 @@ public class SimplePlayer : MonoBehaviour {
             StartingPoint.position.z + Random.Range(-10.0f, 10.0f)
             );
 
-        Transform transf = new GameObject().transform;
+		GameObject tclone = new GameObject ();
+        Transform transf = tclone.transform;
         transf.position = position;
         transf.rotation = StartingPoint.rotation;
 
         Player = GameObject.Instantiate(PlayerPrefab, transf) as GameObject;
+		Player.transform.parent = null; //remove parent from child before destroying it
+		GameObject.DestroyImmediate (tclone);
     }
 
     void removePlayer()
@@ -155,6 +165,17 @@ public class SimplePlayer : MonoBehaviour {
 
         Others.Clear();
     }
+
+	void removeSingleOther(string otherId){
+		for(int i = 0; i < Others.Count; i++)
+		{
+			if(Others[i].ClientId == otherId){
+				//GameObject.DestroyImmediate(Others[i].GObject);
+				Others[i].GObject.SetActive(false);
+				return;
+			}
+		}
+	}
 
     void handleStates(List<RStateUpdate> states)
     {
@@ -178,7 +199,8 @@ public class SimplePlayer : MonoBehaviour {
 
             if (!known)
             {
-                Transform transf = new GameObject().transform;
+				GameObject tclone = new GameObject ();
+                Transform transf = tclone.transform;
 
                 transf.position = new Vector3(
                     (float)su.Position.x, 
@@ -195,6 +217,8 @@ public class SimplePlayer : MonoBehaviour {
                     su.ClientId,
                     GameObject.Instantiate(OthersPrefab, transf));
 
+				newOther.GObject.transform.parent = null; //remove parent from child before destroying it
+				GameObject.DestroyImmediate (tclone);
                 Others.Add(newOther);
             }
         }

@@ -14,6 +14,11 @@ public class SimpleUI : MonoBehaviour {
             rgc = BalanceUnity.ACCESS().GetRGC();
         }
 
+		if(rgc == null || !rgc.IsReady()){
+			GUI.Label(new Rect(10, 10, 100, 20), "Getting ready..");
+			return;
+		}
+
         //MM-Queue
         if (!rgc.IsInQueue() && !rgc.IsInMatch())
         {

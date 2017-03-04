@@ -6,6 +6,10 @@ using Balance.Specialized;
 
 public class BalanceUnity : MonoBehaviour {
 
+	public string ServerAddress = "192.168.192.52";
+	public int ServerPort = 8443;
+	public bool ClientDebugLog = false;
+
     private RoomGroupClient rgc;
 
 	// Use this for initialization
@@ -15,7 +19,7 @@ public class BalanceUnity : MonoBehaviour {
 
     void debugLog(string message)
     {
-        //Debug.Log(message);
+        Debug.Log(message);
     }
 
     public RoomGroupClient GetRGC()
@@ -43,16 +47,20 @@ public class BalanceUnity : MonoBehaviour {
     RoomGroupClient initBalanceEngine()
     {
         Config config = new Config();
-        config.hostname = "192.168.192.52";
-        config.port = 8443;
+		config.hostname = ServerAddress;
+        config.port = ServerPort;
+		config.debugLog = ClientDebugLog;
 
         WSClient ws = new WSClient();
         RoomGroupClient rgc = new RoomGroupClient(config, ws, this.debugLog);
 
-        ws.OnConnect += () =>
-        {
+        ws.OnConnect += () => {
             Debug.Log("connected.");
         };
+
+		rgc.OnReady += () => {
+			Debug.Log("rgc is ready: " + rgc.GetIdentification());
+		};
 
         rgc.OnJoinedQueue += packet => {
             Debug.Log("queue joined.");
