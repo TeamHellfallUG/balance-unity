@@ -4,6 +4,11 @@ using Balance.Utils;
 using Balance.Client;
 using Balance.Specialized;
 
+public class BUStats {
+	public long WsPing = -1;
+	public long UdpPing = -1;
+}
+
 public class BalanceUnity : MonoBehaviour {
 
 	public string ServerAddress = "192.168.192.52";
@@ -11,11 +16,27 @@ public class BalanceUnity : MonoBehaviour {
 	public bool ClientDebugLog = false;
 
     private RoomGroupClient rgc;
+	private UDPClient udp;
 
 	// Use this for initialization
 	void Start () {
         rgc = this.initBalanceEngine();
     }
+
+	public BUStats GetStats(){
+		
+		BUStats stats = new BUStats ();
+
+		if (rgc != null) {
+			stats.WsPing = rgc.GetPing ();
+		}
+
+		if (udp != null) {
+			stats.UdpPing = udp.GetPing ();
+		}
+
+		return stats;
+	}
 
     void debugLog(string message)
     {
@@ -66,6 +87,8 @@ public class BalanceUnity : MonoBehaviour {
             Debug.Log("queue joined.");
         };
 
+		udpTest ();
+
         rgc.Run();
         return rgc;
     }
@@ -78,6 +101,11 @@ public class BalanceUnity : MonoBehaviour {
             rgc.Close();
             rgc = null;
         }
+
+		if (udp != null) {
+			udp.Close ();
+			udp = null;
+		}
     }
 
     // OnDisable is called when Scene is taken down
@@ -90,4 +118,27 @@ public class BalanceUnity : MonoBehaviour {
     {
         this.endRgc();
     }
+
+
+	void udpTest(){
+
+		//UDPClient.ACK_INTERVAL = 10;
+
+		udp = new UDPClient();
+
+		Config config = new Config();
+		config.hostname = "192.168.192.52";
+		config.port = 9443;
+
+		udp.OnError += Debug.Log;
+		udp.OnMessage += Debug.Log;
+		//udp.OnDebug += Debug.Log;
+
+		udp.Connect(config);
+
+		udp.OnConnect += () =>
+		{
+			udp.Send("derp");
+		};
+	}
 }
