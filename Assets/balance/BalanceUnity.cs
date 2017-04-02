@@ -13,10 +13,10 @@ public class BalanceUnity : MonoBehaviour {
 
 	public string ServerAddress = "192.168.192.52";
 	public int ServerPort = 8443;
+    public int UdpServerPort = 9443;
 	public bool ClientDebugLog = false;
 
     private RoomGroupClient rgc;
-	private UDPClient udp;
 
 	// Use this for initialization
 	void Start () {
@@ -31,8 +31,8 @@ public class BalanceUnity : MonoBehaviour {
 			stats.WsPing = rgc.GetPing ();
 		}
 
-		if (udp != null) {
-			stats.UdpPing = udp.GetPing ();
+		if (rgc.GetUdpSubClient() != null) {
+			stats.UdpPing = rgc.GetUdpSubClient().GetPing ();
 		}
 
 		return stats;
@@ -72,8 +72,13 @@ public class BalanceUnity : MonoBehaviour {
         config.port = ServerPort;
 		config.debugLog = ClientDebugLog;
 
+        Config udpConfig = new Config();
+        udpConfig.hostname = ServerAddress;
+        udpConfig.port = UdpServerPort;
+        config.debugLog = ClientDebugLog;
+
         WSClient ws = new WSClient();
-        RoomGroupClient rgc = new RoomGroupClient(config, ws, this.debugLog);
+        RoomGroupClient rgc = new RoomGroupClient(config, ws, udpConfig, this.debugLog);
 
         ws.OnConnect += () => {
             Debug.Log("connected.");
@@ -87,8 +92,6 @@ public class BalanceUnity : MonoBehaviour {
             Debug.Log("queue joined.");
         };
 
-		udpTest ();
-
         rgc.Run();
         return rgc;
     }
@@ -101,11 +104,6 @@ public class BalanceUnity : MonoBehaviour {
             rgc.Close();
             rgc = null;
         }
-
-		if (udp != null) {
-			udp.Close ();
-			udp = null;
-		}
     }
 
     // OnDisable is called when Scene is taken down
@@ -119,26 +117,4 @@ public class BalanceUnity : MonoBehaviour {
         this.endRgc();
     }
 
-
-	void udpTest(){
-
-		//UDPClient.ACK_INTERVAL = 10;
-
-		udp = new UDPClient();
-
-		Config config = new Config();
-		config.hostname = "192.168.192.52";
-		config.port = 9443;
-
-		udp.OnError += Debug.Log;
-		udp.OnMessage += Debug.Log;
-		//udp.OnDebug += Debug.Log;
-
-		udp.Connect(config);
-
-		udp.OnConnect += () =>
-		{
-			udp.Send("derp");
-		};
-	}
 }

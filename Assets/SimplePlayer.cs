@@ -76,6 +76,17 @@ public class SimplePlayer : MonoBehaviour {
 				});
 			};
 
+            rgc.OnUdpClientClose += () =>
+            {
+                Debug.Log("udp disconnected.");
+
+                MainThread.Call(() =>
+                {
+                    removeOthers();
+                    removePlayer();
+                });
+            };
+
             rgc.OnMatchStart += packet =>
             {
                 Debug.Log("OnMatchStart.");
@@ -84,6 +95,11 @@ public class SimplePlayer : MonoBehaviour {
                 {
                     spawnPlayer();
                 });
+            };
+
+            rgc.OnMatchValidated += () =>
+            {
+                Debug.Log("OnMatchValidated.");
             };
 
             rgc.OnStatesUpdate += states =>
@@ -105,7 +121,7 @@ public class SimplePlayer : MonoBehaviour {
             {
                 if (Player != null && Player.transform != null)
                 {
-                    rgc.SendStateUpdate(getStateUpdate());
+                    rgc.SendUdpStateUpdate(getStateUpdate());
                 }
             }
         }
