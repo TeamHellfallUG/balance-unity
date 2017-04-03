@@ -65,6 +65,17 @@ public class BalanceUnity : MonoBehaviour {
         return bu;
     }
 
+    public void Reconnect()
+    {
+        if (rgc != null && rgc.IsInMatch())
+        {
+            rgc.ExitMatch();
+        }
+
+        endRgc();
+        rgc = initBalanceEngine();
+    }
+
     RoomGroupClient initBalanceEngine()
     {
         Config config = new Config();

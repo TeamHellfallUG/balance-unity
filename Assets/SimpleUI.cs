@@ -20,13 +20,15 @@ public class SimpleUI : MonoBehaviour {
 		}
 
         //MM-Queue
-        if (!rgc.IsInQueue() && !rgc.IsInMatch())
+        if (!rgc.IsInQueue() && !rgc.IsInMatch() && !rgc.IsConfirmationOpen())
         {
             if (GUI.Button(new Rect(10, 10, 126, 30), "Join Match-Making"))
             {
                 rgc.JoinMatchMakingQueue();
             }
-        } else if(!rgc.IsInMatch() && !rgc.IsConfirmationOpen())
+        }
+
+        if (rgc.IsInQueue() && !rgc.IsConfirmationOpen())
         {
             if (GUI.Button(new Rect(10, 10, 146, 30), "Leave Match-Making"))
             {
@@ -52,5 +54,13 @@ public class SimpleUI : MonoBehaviour {
             }
         }
 
+        //Reconnect
+        if (rgc.IsReady())
+        {
+            if (GUI.Button(new Rect(10, 130, 126, 30), "Reconnect"))
+            {
+                BalanceUnity.ACCESS().Reconnect();
+            }
+        }
     }
 }

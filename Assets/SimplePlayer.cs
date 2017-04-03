@@ -205,7 +205,7 @@ public class SimplePlayer : MonoBehaviour {
             for (int o = 0; o < Others.Count; o++)
             {
                 ot = Others[o];
-                if(su.ClientId == ot.ClientId)
+                if(su.clientId == ot.ClientId)
                 {
                     known = true;
                     applyStateToGameObject(su, ot.GObject);
@@ -219,18 +219,18 @@ public class SimplePlayer : MonoBehaviour {
                 Transform transf = tclone.transform;
 
                 transf.position = new Vector3(
-                    (float)su.Position.x, 
-                    (float)su.Position.y, 
-                    (float)su.Position.z);
+                    (float)su.position.x, 
+                    (float)su.position.y, 
+                    (float)su.position.z);
 
                 transf.rotation = Quaternion.Euler(
-                    (float)su.Rotation.x,
-                    (float)su.Rotation.y,
-                    (float)su.Rotation.z);
+                    (float)su.rotation.x,
+                    (float)su.rotation.y,
+                    (float)su.rotation.z);
 
                 Debug.Log("spawning other.");
                 Other newOther = new Other(
-                    su.ClientId,
+                    su.clientId,
                     GameObject.Instantiate(OthersPrefab, transf));
 
 				newOther.GObject.transform.parent = null; //remove parent from child before destroying it
@@ -243,14 +243,14 @@ public class SimplePlayer : MonoBehaviour {
     void applyStateToGameObject(RStateUpdate state, GameObject go)
     {
        Vector3 position = new Vector3(
-                    (float)state.Position.x,
-                    (float)state.Position.y,
-                    (float)state.Position.z);
+                    (float)state.position.x,
+                    (float)state.position.y,
+                    (float)state.position.z);
 
         Quaternion rotation = Quaternion.Euler(
-            (float)state.Rotation.x,
-            (float)state.Rotation.y,
-            (float)state.Rotation.z);
+            (float)state.rotation.x,
+            (float)state.rotation.y,
+            (float)state.rotation.z);
 
         go.transform.position = position;
         go.transform.rotation = rotation;
