@@ -37,7 +37,7 @@ public class SimpleUI : MonoBehaviour {
         }
 
         //Match-Confirmation
-        if (rgc.IsConfirmationOpen())
+        if (rgc.IsConfirmationOpen() && !rgc.HasClientConfirmed())
         {
             if (GUI.Button(new Rect(10, 50, 126, 30), "Confirm Match"))
             {
@@ -54,6 +54,7 @@ public class SimpleUI : MonoBehaviour {
             }
         }
 
+        /*
         //Reconnect
         if (rgc.IsReady())
         {
@@ -61,6 +62,6 @@ public class SimpleUI : MonoBehaviour {
             {
                 BalanceUnity.ACCESS().Reconnect();
             }
-        }
+        } */
     }
 }
